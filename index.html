@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FBX Model Viewer</title>
+    <title>GLB Model Viewer</title>
     <style>
         body { margin: 0; }
         canvas { display: block; }
@@ -11,8 +11,7 @@
 </head>
 <body>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script>
         let scene, camera, renderer, model, controls;
@@ -36,12 +35,14 @@
             controls.minDistance = 1;
             controls.maxDistance = 1000;
 
-            // Load FBX model
-            const loader = new THREE.FBXLoader();
-            loader.load('models/dragon/model.fbx', function (object) {
-                model = object;
+            // Load GLB model
+            const loader = new THREE.GLTFLoader();
+            loader.load('models/dragon/dragon.glb', function (gltf) {
+                model = gltf.scene;
                 scene.add(model);
                 animate();
+            }, undefined, function (error) {
+                console.error(error);
             });
 
             camera.position.z = 5;
@@ -54,6 +55,14 @@
             controls.update();
 
             renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', onWindowResize, false);
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
         init();
